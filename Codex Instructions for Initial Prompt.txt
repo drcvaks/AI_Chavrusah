@@ -1,0 +1,580 @@
+AI Chavrusa
+
+Codex Master Plan: Build the Foundation Without Overbuilding the Future
+
+Planning document before development begins
+
+1. What We Are Building
+
+AI Chavrusa is a voice-first Torah-learning workspace. Its purpose is not merely to answer Torah questions. It should help a learner read, translate, understand, question, compare, verify, develop ideas, and preserve the resulting learning in an organized personal beis midrash.
+
+The core loop remains: TALK / LEARN -> EXPLORE -> VERIFY -> SAVE -> RETRIEVE -> IMPROVE.
+
+The first implementation must be intentionally modest. We want a stable foundation that can later support a sophisticated human-first learning engine, deeper be'iyun learning, source controls, versioned writing, knowledge connections, and collaboration without forcing Codex to build all of those systems now.
+
+2. Non-Negotiable Product Principles
+
+Source-grounded Torah: source claims must be traceable to actual retrieved texts. AI memory is never treated as a verified mareh makom.
+
+Global source authority: initially, a global administrator controls which source categories, works, authors/commentators, and versions the app is permitted to use. Ordinary users cannot weaken those restrictions.
+
+Human authorship: a saved essay/note must preserve the learner's actual thesis and intellectual direction. AI may clarify, strengthen, organize, challenge, and polish it, but may not quietly replace the author's idea with a different AI-generated thesis.
+
+Human-first future: architecture must preserve the ability to distinguish USER, AI, SOURCE, and JOINTLY_DEVELOPED ideas even if the full human-first engine is not implemented in the first milestone.
+
+Two learning depths: the product must be able to support a basic reading/translation/explanation experience and a deeper be'iyun/chavrusa experience. The initial UI may implement only a simple mode preference, but the domain model must not assume one universal response style.
+
+Reversible editing: notes are durable intellectual work. Future editing must support version history and rollback rather than destructive overwrites.
+
+Organization by facets, not rigid folders: one note may simultaneously belong to Gemara, Halacha, a topic, a daf, and a Rambam. Do not force it into one mutually exclusive folder.
+
+3. Recommended Organization Model
+
+Use a faceted library rather than choosing between 'topic' and 'source category.' The same learning can legitimately belong to several dimensions. This solves the problem of a Daf Yomi discussion that begins on one daf but develops into a topic spanning multiple dapim, masechtos, Rishonim, Rambam, and halachic or hashkafic material.
+
+3.1 Primary record types
+
+Learning Session - the actual conversation or learning period. It can be attached to a daf, parsha, sefer, or free-form topic.
+
+Learning Note / Essay - the durable written product. It may be created from one session or later combine several sessions.
+
+Question - a question can remain unresolved and can link to many sessions, sources, and notes.
+
+Source Record - an exact retrieved source with canonical reference, version/edition, text, provenance, and authorization decision.
+
+Idea Record - future-facing record for meaningful USER / AI / SOURCE / JOINTLY_DEVELOPED ideas.
+
+3.2 Facets for notes
+
+Domain/theme: Halacha, Hashkafah, Mussar, Machshavah, Lomdus, Tanach, etc. These should be tags/facets, not exclusive folders.
+
+Source corpus: Tanach, Mishnah, Gemara, Midrash, Rambam, Rishonim, Acharonim, Shulchan Aruch, etc.
+
+Learning context: Daf Yomi, Parsha, personal question, shiur, review, other.
+
+Topic tags: free or curated concepts such as treifos, siman vs. definition, tefillah, bitachon.
+
+Anchor references: up to five major source references that are central to the note. These are metadata for discovery, not a limit on the number of citations in the note.
+
+Important distinction: a note may contain unlimited verified citations/source links, while 'anchor references' are capped at five and identify the texts most central to the essay. For example, an essay could have anchor references Chullin 57a, Rashi there, Tosafos there, Rambam Hilchos Shechita, and a Shulchan Aruch siman, while still citing additional supporting sources inside the body.
+
+4. Learning Modes: Simple Now, Extensible Later
+
+Do not create a complicated pedagogy engine in the first build. Do create a clean mode model so future behavior can be added without database surgery.
+
+READING: default can emphasize reading, translation, vocabulary, straightforward pshat, short summaries, and basic Rashi/Tosafos where appropriate.
+
+BE_IYUN: deeper questioning, conceptual tension, competing readings, broader Rishonim/Acharonim, challenges and source trails.
+
+Mode is a default, not a prison. A learner can say 'explain more,' 'go deeper,' 'just translate this,' or 'let's do this be'iyun' and the session can temporarily change depth.
+
+Future human-first modes such as GUIDE_ME, CHALLENGE_ME, and EXPLAIN_IT should be modeled as a separate pedagogical-support dimension rather than conflated with content depth.
+
+This separation is important: READING vs. BE_IYUN describes depth/style of learning; GUIDE_ME vs. CHALLENGE_ME vs. EXPLAIN_IT describes how much intellectual work the AI leaves to the learner.
+
+5. Source Authorization and Verification
+
+This should be designed correctly from the beginning because it is a trust boundary, not merely a future feature.
+
+5.1 Global admin policy
+
+Create an admin-only source policy system.
+
+Three states: APPROVED, ON_REQUEST, EXCLUDED.
+
+Policy scopes should be extensible: category, work, author/commentator, version/edition.
+
+Initially the global admin is the project owner. User-specific policy can be added later, but a user may never override a global EXCLUDED rule.
+
+Policy enforcement must occur server-side before retrieved text is supplied to the AI.
+
+Every accepted source hit records the policy rule/decision that authorized it.
+
+An excluded source must fail even if the AI explicitly requests it.
+
+5.2 Verification rules
+
+Every quotation or close paraphrase presented as Torah text must connect to an exact retrieved Source Record.
+
+AI may say a source might be relevant, but until retrieval succeeds it must be labeled unverified.
+
+Store canonical reference, provider, category/work metadata, version/edition when available, language, retrieved text, retrieval time, and provenance.
+
+Distinguish source text, interpretation, inference/sevara, and practical conclusion.
+
+Later add claim-level verification; do not pretend that capability exists in the MVP.
+
+6. Authorship, Critique, and Note Integrity
+
+A central requirement is that the final document remains the learner's thought. AI is an editor and chavrusa, not a ghostwriter that silently substitutes its own thesis.
+
+At note creation, capture an AUTHOR THESIS / CORE IDEA field in the learner's own words or a learner-approved summary.
+
+AI-generated drafts must preserve that thesis unless the learner explicitly changes direction.
+
+When the learner changes the thesis during editing, record the newly approved thesis as the current author thesis.
+
+Do not merge an AI-originated idea into the author's thesis without explicit adoption by the learner.
+
+Add a 'Challenges / Reasons This May Be Wrong' section or analysis capability. It should identify counterarguments, missing assumptions, contradictory sources, alternative readings, and possible logical weaknesses.
+
+Critique should strengthen intellectual honesty, not automatically defeat the author's position.
+
+Where a source disproves a claim, surface the conflict clearly rather than rewriting the note so the conflict disappears.
+
+7. Note Versioning and Later Cleanup
+
+Each note has a stable note_id and multiple immutable note_versions.
+
+Saving an AI cleanup creates a new version; it does not overwrite the previous version.
+
+Store created_at, created_by/user name or user id, change reason, and parent version.
+
+Allow future actions: View history, compare versions, restore an earlier version, duplicate a version.
+
+Store author display name and timestamps on the note and on versions.
+
+Future 'Read and Improve' workflow: summarize current note -> identify gaps/weaknesses -> propose changes -> show preview/diff -> user accepts/rejects -> save new version.
+
+Do not implement sophisticated Word-style track changes in the MVP. The schema and service boundary should simply make versioning possible.
+
+8. Human-First Architecture: Prepare Now, Build Later
+
+Do not implement the full human-first engine yet. However, avoid architecture that would make it difficult later.
+
+Reserve an IdeaOrigin type: USER, AI, SOURCE, JOINTLY_DEVELOPED.
+
+Allow future learner_ideas records linked to sessions/messages/sources.
+
+Keep raw user messages and AI messages rather than saving only a flattened summary.
+
+Keep AI conversation logic behind a service/orchestration layer rather than embedding prompt logic directly in UI components.
+
+Design the AI prompt builder as composable modules: source rules, depth mode, pedagogical support, note-authoring rules, session context.
+
+Leave room for future LearningState fields such as support level, learner ideas, unresolved questions, concepts explained by AI, and concepts demonstrated by learner.
+
+Do not implement scoring, ownership percentages, intent classification, graduated hints, or ownership revisit in the first milestone unless explicitly requested later.
+
+9. Proposed Data Model
+
+profiles
+- id
+- display_name
+- role: USER | GLOBAL_ADMIN
+- default_depth_mode: READING | BE_IYUN
+- created_at
+
+learning_sessions
+- id
+- user_id
+- title
+- depth_mode
+- context_type
+- mesechta / daf / sefer / parsha (nullable)
+- topic (nullable)
+- started_at / ended_at
+
+messages
+- id
+- session_id
+- speaker: USER | AI
+- text
+- created_at
+- metadata jsonb (future-safe)
+
+notes
+- id
+- owner_user_id
+- title
+- current_version_id
+- author_thesis
+- created_at / updated_at
+
+note_versions
+- id
+- note_id
+- version_number
+- body
+- summary
+- author_thesis_snapshot
+- created_by
+- created_at
+- change_reason
+- parent_version_id
+
+note_facets
+- note_id
+- facet_type: DOMAIN | CORPUS | CONTEXT | TOPIC
+- facet_value
+
+note_anchor_sources
+- note_id
+- source_hit_id
+- rank 1..5
+- why_central
+
+source_policy_rules
+- id
+- scope_type: CATEGORY | WORK | AUTHOR | VERSION
+- scope_key
+- state: APPROVED | ON_REQUEST | EXCLUDED
+- priority / specificity
+- created_by_admin
+- created_at
+
+source_hits
+- id
+- session_id
+- provider
+- canonical_ref
+- title / he_title
+- categories
+- version_title
+- language
+- retrieved_text
+- policy_rule_id
+- policy_decision
+- retrieved_at
+- provenance_metadata jsonb
+
+note_sources
+- note_version_id
+- source_hit_id
+- usage_type / optional claim locator
+
+questions
+- id
+- owner_user_id
+- session_id nullable
+- note_id nullable
+- question_text
+- status: OPEN | DEFERRED | RESOLVED
+- created_at
+
+# FUTURE TABLE - migration may be deferred:
+learner_ideas
+- id
+- session_id
+- message_id
+- idea_text
+- origin: USER | AI | SOURCE | JOINTLY_DEVELOPED
+- learner_reasoning
+- confidence
+- revisit_status
+- created_at
+
+10. Build Strategy: Small, Testable Milestones
+
+Codex should complete one milestone at a time. After each milestone it must stop, run checks, provide a test checklist, and wait for approval before moving on. Do not ask Codex to implement the entire specification in one pass.
+
+Milestone 0 - Repo & Architecture Plan (NO feature build)
+
+Build:
+
+Inspect the existing repository and package versions.
+
+Propose folder structure, service boundaries, Supabase migration sequence, and risks.
+
+Create/refresh README architecture notes only if approved.
+
+Do not add AI, Sefaria, or voice yet.
+
+Acceptance test:
+
+App still runs exactly as before (or blank starter runs).
+
+Typecheck/lint status is reported.
+
+A concise implementation plan maps each later milestone to files/tables.
+
+Milestone 1 - App Shell + Supabase Foundation
+
+Build:
+
+Expo Router navigation.
+
+Supabase connection/authentication.
+
+profiles with display_name and USER/GLOBAL_ADMIN role.
+
+Core typed models/interfaces.
+
+Home, My Learning placeholder, Settings placeholder, Admin placeholder visible only to admin.
+
+Acceptance test:
+
+Can sign in/out.
+
+User name is displayed.
+
+Admin screen is inaccessible to normal user.
+
+RLS prevents one user from reading another user's private rows.
+
+Milestone 2 - Sessions + Notes + Organization (NO live AI)
+
+Build:
+
+Create a learning session manually.
+
+Support READING / BE_IYUN depth mode in data and UI.
+
+Create/edit a manual note.
+
+Add faceted metadata and up to five anchor-source placeholders.
+
+Add timestamps/user attribution.
+
+Create note versions on save/edit.
+
+Acceptance test:
+
+Create a Daf Yomi session for Chullin 57a.
+
+Create a topic note that is tagged Gemara + Halacha and still linked to Chullin 57a.
+
+Confirm >5 anchor refs is rejected while ordinary future citations are not conceptually capped.
+
+Edit note twice and restore/view earlier version.
+
+Milestone 3 - Global Source Policy Engine (mock source provider first)
+
+Build:
+
+Admin CRUD for APPROVED / ON_REQUEST / EXCLUDED rules.
+
+Hierarchical/specificity-aware policy evaluator.
+
+Server-side SourceGateway interface.
+
+Mock provider and automated policy tests.
+
+Persist policy decision with source hit.
+
+Acceptance test:
+
+Normal user cannot edit global rules.
+
+Excluded work never reaches returned SourceGateway results.
+
+Approved work passes.
+
+On-request work fails without authorization and passes with explicit temporary authorization.
+
+Tests run automatically.
+
+Milestone 4 - Live Sefaria Integration
+
+Build:
+
+Implement Sefaria adapter behind SourceGateway.
+
+Exact reference retrieval first; then search/related sources as a separate step.
+
+Normalize provider response into TorahSource/SourceHit.
+
+Source viewer with exact ref, text, version/language/provenance.
+
+No AI-generated citations are accepted as SourceHits.
+
+Acceptance test:
+
+Retrieve known seeded references such as Chullin 57a and display exact returned text.
+
+Change admin policy to EXCLUDED and verify the same source is blocked before model context.
+
+Verify malformed/not-found refs produce clear errors rather than fabricated text.
+
+Milestone 5 - Text AI Chavrusa
+
+Build:
+
+Server-side AI provider abstraction.
+
+Text conversation only.
+
+Composable prompt modules.
+
+Depth mode behavior: READING vs BE_IYUN.
+
+AI source requests must go through SourceGateway.
+
+Save transcript/messages.
+
+Acceptance test:
+
+Ask a factual/reading question and observe concise reading-style response.
+
+Switch to BE_IYUN and observe deeper source trail/questioning.
+
+Ask for an excluded source and verify it is not used.
+
+Ask for an unverified remembered source and verify the AI labels it as needing verification.
+
+Milestone 6 - Learning Note Generation with Author Thesis
+
+Build:
+
+Generate note from a session.
+
+Capture/confirm Author Thesis before final save.
+
+Sections: Question/Theme, Author Thesis, Background, Source Trail, Analysis, Challenges/Reasons It May Be Wrong, Unresolved Questions, Next Sources.
+
+Preserve idea provenance where available; do not claim AI ideas are user ideas.
+
+Saving generated/edited note creates a new version.
+
+Acceptance test:
+
+Compare final thesis with learner-approved thesis.
+
+Insert an AI alternative idea and verify it is not silently substituted for the author thesis.
+
+Generate counterarguments without changing the thesis.
+
+Restore pre-AI-cleanup version.
+
+Milestone 7 - Voice
+
+Build:
+
+Add microphone/realtime voice behind a VoiceProvider abstraction.
+
+Drive-safe minimal UI.
+
+Transcript persists to messages.
+
+Voice commands may request save/question/source actions, but all source rules remain unchanged.
+
+Acceptance test:
+
+Complete a short voice session.
+
+Interrupt/change direction naturally.
+
+Confirm transcript saved.
+
+Confirm source authorization behavior is identical to text mode.
+
+Milestone 8 - Human-First Engine (FUTURE - DO NOT BUILD NOW)
+
+Build:
+
+Intent classification.
+
+Learner idea storage with origin.
+
+Graduated assistance.
+
+Ownership revisit.
+
+Concepts explained by AI vs demonstrated by learner.
+
+GUIDE_ME / CHALLENGE_ME / EXPLAIN_IT pedagogical-support dimension.
+
+Acceptance test:
+
+Defined later after the simpler learning loop feels natural.
+
+11. Codex Guardrails
+
+Do not jump ahead to later milestones.
+
+Do not add social/community, payments, knowledge graphs, human chavrusa matching, or publishing now.
+
+Do not implement the full Human-First engine now.
+
+Do not put API secrets in Expo client code.
+
+Do not hard-code source authorization in UI components.
+
+Do not let the AI bypass SourceGateway.
+
+Do not treat Sefaria search results or model recollection as verified until normalized/retrieved as a SourceHit.
+
+Do not make note organization depend on a single folder hierarchy.
+
+Do not destructively overwrite note content when versioning is available.
+
+Do not silently change the author's thesis.
+
+Prefer migrations and typed interfaces that can evolve over premature complex implementations.
+
+12. The Prompt to Give Codex First
+
+You are helping me build an Expo/React Native TypeScript app called AI Chavrusa.
+
+IMPORTANT: We are deliberately building this in small, testable milestones. Do NOT implement the whole product from this prompt.
+
+PRODUCT GOAL
+AI Chavrusa is a voice-first Torah learning workspace. A learner should eventually be able to learn conversationally, inspect real approved sources, develop their own ideas, and turn the learning into durable editable notes. The app must be source-grounded and must preserve human authorship.
+
+LONG-TERM DESIGN PRINCIPLES
+1. Verified Torah sources:
+   - The AI may not treat its memory as a verified mareh makom.
+   - All source-grounded claims must eventually use a server-side SourceGateway.
+   - A GLOBAL_ADMIN controls allowed sources.
+   - Source policy states are APPROVED, ON_REQUEST, EXCLUDED.
+   - Users may never override a global EXCLUDED source.
+
+2. Human authorship:
+   - The learner's thesis/central idea must remain the learner's.
+   - AI may organize, strengthen, critique, and polish, but may not silently replace the thesis.
+   - Future idea provenance must support USER, AI, SOURCE, JOINTLY_DEVELOPED.
+
+3. Learning depth:
+   - Support a content-depth concept of READING vs BE_IYUN.
+   - READING = translation/basic pshat/summary.
+   - BE_IYUN = deeper questions, competing readings, broader source trails.
+   - Later we may separately add pedagogical modes GUIDE_ME / CHALLENGE_ME / EXPLAIN_IT. Do not build those yet.
+
+4. Organization:
+   - Do NOT use one rigid folder hierarchy.
+   - Notes need facets: DOMAIN, CORPUS, CONTEXT, TOPIC.
+   - A note may belong to several facets simultaneously.
+   - A note may have up to 5 central/anchor source references for discovery, while the body may eventually contain any number of verified citations.
+
+5. Durable notes:
+   - Notes need user/display-name attribution and timestamps.
+   - Plan for immutable note_versions and rollback.
+   - Future AI cleanup must create a new version rather than destructively overwrite.
+   - Plan for a 'Challenges / Reasons This May Be Wrong' analysis section.
+
+6. Human-first future:
+   - Long term, the AI should help the person learn without becoming the person doing the learning.
+   - We will later add learner idea storage, graduated assistance, ownership revisits, and intent classification.
+   - DO NOT implement that engine now.
+   - Keep raw messages and use modular service/prompt architecture so it can be added later.
+
+TECHNICAL DIRECTION
+- Expo / React Native / TypeScript
+- Expo Router
+- Supabase Auth + Postgres + RLS
+- Supabase Edge Functions or equivalent server-side boundary for privileged AI/source calls
+- /src/services/ai provider abstraction
+- /src/services/sources SourceGateway abstraction
+- domain types separate from UI
+- no API secrets in client code
+
+YOUR TASK RIGHT NOW: MILESTONE 0 ONLY
+A. Inspect the repository before changing anything.
+B. Report the current stack, package versions, structure, and anything that could affect the plan.
+C. Propose a concise target folder/service architecture.
+D. Propose the Supabase migration order needed for Milestones 1-4.
+E. Identify any design choices that would make the long-term goals above difficult.
+F. Produce a step-by-step plan for Milestone 1 only.
+G. Do NOT implement Milestone 1 until I approve the plan.
+
+Your response should contain:
+1. Current repo assessment
+2. Proposed architecture
+3. Proposed data-model/migration sequence
+4. Milestone map
+5. Risks/questions requiring my decision
+6. Exact Milestone 1 implementation checklist
+7. Exact tests I will be able to run after Milestone 1
+
+Keep the architecture simple. Build for extensibility, not speculative complexity.
+
