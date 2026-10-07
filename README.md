@@ -4,7 +4,7 @@ AI Chavrusah is a planned voice-first Torah-learning workspace for conversationa
 
 ## Project status
 
-The owner has approved the [Milestone 0 architecture plan](Planning/Milestone-0-Plan.md). This repository currently contains planning and reference documents, with local Git tracking. There is no executable app, installed project dependency set, or database migration yet. Milestone 1 will establish the Expo app shell, Supabase authentication, private profiles, and admin access controls.
+The owner has approved the [Milestone 0 architecture plan](Planning/Milestone-0-Plan.md). This repository currently contains planning and reference documents, with local Git tracking. The owner has supplied the hosted Supabase project URL and publishable key; client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. CLI authentication and project linking have not yet been verified. There is no executable app, installed project dependency set, or database migration yet. Milestone 1 will establish the Expo app shell, Supabase authentication, private profiles, and admin access controls.
 
 ## Repository contents
 
@@ -58,7 +58,7 @@ Before building, identify:
 3. The email to use for the first app account and eventual GLOBAL_ADMIN. A Supabase dashboard account is separate from an app's Supabase Auth user. The admin role will be assigned by a trusted action after that app account exists; never through user-supplied signup metadata.
 4. The first test device: Android or iPhone. Web can supplement device testing.
 
-Proposed defaults are email/password authentication with email confirmation enabled and the display name AI Chavrusah. AI, source retrieval, voice, and note generation are later milestones, so their provider accounts and keys are not needed for Milestone 1.
+The owner selected Android with Expo Go for mobile testing, supplemented by web, and supplied the intended admin account email separately. That app account must still be created and verified before a trusted admin assignment. Proposed defaults are email/password authentication with email confirmation enabled and the display name AI Chavrusah. AI, source retrieval, voice, and note generation are later milestones, so their provider accounts and keys are not needed for Milestone 1.
 
 ## Validation and milestone approvals
 

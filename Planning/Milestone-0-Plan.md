@@ -1,6 +1,6 @@
 # AI Chavrusah Milestone 0 Architecture Plan
 
-Prepared October 6, 2026. Status: owner approved the Milestone 0 plan and README creation; Milestone 1 setup awaits development-project/account/device details. No application features, dependencies, or database migrations have been created.
+Prepared October 6, 2026. Status: owner approved the Milestone 0 plan and README creation; project URL, publishable key, and intended admin email received. Android with Expo Go and web selected for testing. Client environment configuration saved; CLI authentication and project linking pending verification. No application features, dependencies, or database migrations have been created.
 
 ## 1. Current repository assessment
 
