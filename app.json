@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "AI Chavrusah",
+    "slug": "ai-chavrusah",
+    "version": "0.1.0",
+    "scheme": "aichavrusah",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": { "package": "com.aichavrusah.app" },
+    "web": { "output": "single", "name": "AI Chavrusah" },
+    "plugins": ["expo-router", "expo-splash-screen"],
+    "experiments": { "typedRoutes": true }
+  }
+}

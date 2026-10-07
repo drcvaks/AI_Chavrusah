@@ -4,7 +4,26 @@ AI Chavrusah is a planned voice-first Torah-learning workspace for conversationa
 
 ## Project status
 
-The owner has approved the [Milestone 0 architecture plan](Planning/Milestone-0-Plan.md). This repository currently contains planning and reference documents, with local Git tracking. The owner has supplied the hosted Supabase project URL and publishable key; client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. CLI authentication and project linking have not yet been verified. There is no executable app, installed project dependency set, or database migration yet. Milestone 1 will establish the Expo app shell, Supabase authentication, private profiles, and admin access controls.
+The owner approved the [Milestone 0 architecture plan](Planning/Milestone-0-Plan.md). Milestone 1 adds an Expo app shell, email/password authentication, private profiles, saved display-name/depth preferences, and an admin-only placeholder. My Learning remains a placeholder. No AI, source retrieval, note features, or voice are implemented.
+
+The development Supabase project is linked. Client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. The profiles migration is applied. Detailed validation and remaining manual checks belong in [the Milestone 1 report](Planning/Milestone-1-Report.md).
+
+## Run the app
+
+Use Node 24 LTS and npm. The lockfile records exact dependency versions; the official starter uses Expo SDK 57, React Native 0.86, and React 19.2.3.
+
+```powershell
+Set-Location -LiteralPath 'C:\Users\Family\ws\AI Chavrusah'
+npm.cmd ci
+# If .env is missing, copy .env.example to .env and fill in the client values.
+npm.cmd start
+```
+
+For Android, install/update Expo Go, connect the phone and computer to the same network, and scan the terminal QR code from Expo Go. The installed Expo Go must support SDK 57; Android can also use the matching build from [Expo Go downloads](https://expo.dev/go). Web testing uses `npm.cmd run web` or the `w` option in the running Expo terminal. Web and mobile share the hosted development database.
+
+The app starts on port 8083 because 8081 is occupied by another development server on this computer. Open `http://localhost:8083` for web testing. If Expo Go chooses a virtual network interface, use the Wi-Fi address with `REACT_NATIVE_PACKAGER_HOSTNAME` when starting Expo; the current test session uses 10.0.0.52.
+
+Create an app account with your chosen password and confirm its email before signing in. Your Supabase dashboard login does not create an app account. After clicking the confirmation link, return to the app and sign in manually; automatic email deep-link login is not implemented. If the default confirmation redirect opens an unavailable localhost page, the email may still have been confirmed; return and try signing in. For a clean local web redirect, set Authentication > URL Configuration > Site URL to your running web URL, `http://localhost:8083`, in the development dashboard.
 
 ## Repository contents
 
@@ -12,6 +31,12 @@ The owner has approved the [Milestone 0 architecture plan](Planning/Milestone-0-
 - `Planning/`: architecture, implementation checklists, decisions, and milestone reports.
 - `Material/`: supplied product-planning reference documents. Earlier proposals do not override the controlling specification.
 - `Docs/`: the owner's independent learning documents for future comparisons; not automatically ingested, edited, or treated as verified Torah sources.
+- `src/app/`: Expo Router screens and auth/admin route guards.
+- `src/domain/`: product types, kept separate from screens.
+- `src/services/auth/`: auth/profile operations and identity-transition controller.
+- `src/providers/` and `src/lib/`: auth lifecycle, client configuration, and Supabase client.
+- `supabase/migrations/` and `src/types/database.ts`: versioned schema and generated types.
+- `tests/`, `supabase/tests/`, and `scripts/`: client/security tests and trusted developer administration helpers.
 
 ## Planned architecture
 
@@ -51,19 +76,67 @@ npx.cmd supabase link --project-ref YOUR_PROJECT_REF
 
 Complete any login verification or database-password prompt locally. Do not paste private credentials into chat or commit them. No Supabase connector is currently available in this chat; the CLI is the proposed administration route. Linking identifies the project; migrations are a separate step and will target only the agreed development environment.
 
-Before building, identify:
+The project connection details and testing choices have been supplied. For another development environment, identify:
 
 1. The development project's dashboard link/project reference and its client project URL and publishable key.
 2. Confirmation that it is the dedicated development project, rather than a production or shared database.
 3. The email to use for the first app account and eventual GLOBAL_ADMIN. A Supabase dashboard account is separate from an app's Supabase Auth user. The admin role will be assigned by a trusted action after that app account exists; never through user-supplied signup metadata.
 4. The first test device: Android or iPhone. Web can supplement device testing.
 
-The owner selected Android with Expo Go for mobile testing, supplemented by web, and supplied the intended admin account email separately. That app account must still be created and verified before a trusted admin assignment. Proposed defaults are email/password authentication with email confirmation enabled and the display name AI Chavrusah. AI, source retrieval, voice, and note generation are later milestones, so their provider accounts and keys are not needed for Milestone 1.
+The owner selected Android with Expo Go for mobile testing, supplemented by web. Their app account must be created and verified before a trusted admin assignment. Email/password authentication uses email confirmation, and the display name is AI Chavrusah. AI and voice provider keys are not needed for Milestone 1.
+
+## Database setup and admin assignment
+
+For a new agreed development project, initialize/link the CLI, preview changes, and apply migrations:
+
+```powershell
+npx.cmd supabase login
+npx.cmd supabase link --project-ref YOUR_PROJECT_REF
+npx.cmd supabase db push --dry-run
+npx.cmd supabase db push
+```
+
+The configured project already has the profiles migration; do not reset it. Signup always provisions USER/READING defaults, irrespective of user metadata. Authenticated users can read their own profile and update only display_name/default_depth_mode. Global admins retain that same private-profile boundary.
+
+After the owner signs up and confirms the intended app email, run this trusted developer command with the authorized CLI login:
+
+```powershell
+npm.cmd run admin:promote -- YOUR_VERIFIED_APP_ACCOUNT_EMAIL
+```
+
+The helper requires exactly one verified app account, identifies its UUID, then assigns GLOBAL_ADMIN. It never creates an account, sets a password, or trusts signup role metadata. Sign out and back in afterward to refresh the app's admin guard. This command uses your CLI's privileged project access and is not available inside the app.
+
+To refresh generated database types after an approved schema change, use `npx.cmd supabase gen types typescript --linked` and save successful output to `src/types/database.ts`.
 
 ## Validation and milestone approvals
 
-Milestone 0 verified the document inventory, local tools, preservation of the supplied files, and local Git baseline. App launch, typecheck, lint, and database tests are not runnable yet.
+```powershell
+npm.cmd run typecheck
+npm.cmd run lint
+npm.cmd test -- --run
+npx.cmd expo-doctor
+npm.cmd run export:web
+npm.cmd run export:android
+npm.cmd run test:db:hosted
+npm.cmd run test:auth:hosted
+npx.cmd supabase db lint --linked --level warning
+```
 
-The architecture plan contains the exact proposed Milestone 1 build and test checklists. After implementation, this README will provide actual dependency versions, setup commands, and verified test results. Local Supabase database tests require a compatible running container runtime; confirm local prerequisites before claiming that test path is available.
+Hosted database tests run 20 pgTAP assertions inside a rolled-back transaction, using real anon/authenticated roles. The harness raises a SQL error if an assertion fails. Hosted API tests obtain the admin API key only in process memory through the authorized CLI, create two clearly named temporary test accounts, test sign-in/out and Data API permissions, and remove those accounts in cleanup. Run hosted tests only against the agreed development project. Neither script writes secrets to disk or logs them.
+
+For local database tests, Docker or a compatible container runtime is required:
+
+```powershell
+npx.cmd supabase start
+# Apply pending migrations to the local database, not the linked hosted database.
+npx.cmd supabase migration up --local
+npm.cmd run test:db
+```
+
+Docker was not available on the development computer during setup, so the hosted checks provide the database-security validation. No Docker installation is required to use the hosted app.
+
+The [Milestone 1 report](Planning/Milestone-1-Report.md) records actual check results, file changes, and the owner test checklist. Physical Android/Expo Go acceptance and the owner's admin-account signup require manual testing.
+
+The dependency audit remains unresolved: 29 entries propagate from four underlying upstream advisories. Compatible fixes were attempted without forcing incompatible framework versions. See the milestone report for details before considering deployment.
 
 Complete one milestone at a time. After each milestone, report changed files, check results, limitations, and manual tests, then wait for the owner's approval before proceeding.
