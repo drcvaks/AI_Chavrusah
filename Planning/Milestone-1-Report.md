@@ -1,6 +1,6 @@
 # AI Chavrusah Milestone 1 Report
 
-Status: implementation delivered and automated checks passed; owner signup, admin assignment, and physical Android acceptance remain. Scope is app shell, authentication, private profiles, typed models, and admin placeholders only. Milestone 2 has not started.
+Status: implementation delivered and automated checks passed; owner sign-in confirmed and global admin assigned. Physical Android acceptance and the remaining owner checklist still need confirmation. Scope is app shell, authentication, private profiles, typed models, and admin placeholders only. Milestone 2 has not started.
 
 ## Delivered behavior
 
@@ -12,7 +12,7 @@ The server provisions USER/READING defaults and ignores role metadata. Profiles 
 
 Hosted development project: mmkbwjprujnrvmryeapi, AI_Chavrusah, us-east-1. CLI authentication verified and project linked. Migration 20261007030000_profiles_foundation applied. Generated database types saved. No API secrets are present in the client. No reference documents were modified.
 
-Owner app account is not yet created/verified; no owner admin assignment has been made. Temporary integration-test accounts were removed. Docker is unavailable, so hosted database tests supplement the local test script.
+The owner confirmed signing in with the intended app email. The trusted admin helper verified that exactly one email-confirmed account exists and assigned GLOBAL_ADMIN, confirming the updated role. Sign out and back in to refresh the app's admin guard. Temporary integration-test accounts were removed. Docker is unavailable, so hosted database tests supplement the local test script.
 
 The preview runs at http://localhost:8083. Android Expo Go connects to exp://10.0.0.52:8083 on the same Wi-Fi network. The manifest returns HTTP 200 and advertises that Wi-Fi address for its launch bundle. Port 8081 belongs to another development process and was left alone.
 
@@ -51,7 +51,7 @@ The in-app browser automation tool timed out twice. Web verification used the bu
 
 npm audit still reports 29 entries (18 high, 11 moderate) propagated from four underlying advisories: [braces](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), [decode-uri-component](https://github.com/advisories/GHSA-vcc3-ghjq-m6fr), [node-forge](https://github.com/advisories/GHSA-86w9-cpqp-85rv), and [uuid](https://github.com/advisories/GHSA-w5hq-g745-h8pq). A compatible npm audit fix updated nine packages and replaced nine nested packages but did not clear these advisories. npm's forced remediation proposes incompatible Expo/Router/React Native version changes; those were not applied. The dependency audit is therefore unresolved even though build, auth, and compatibility checks pass. Reassess compatible upstream fixes before deployment.
 
-Owner admin assignment is pending creation of the verified app account. Password recovery UI, automatic email deep-link login, OAuth, app-store builds, and deployment are outside M1. Confirmation links use the development project's existing redirect configuration; README explains setting a clean local web redirect and returning to the app manually. Native keyboard, foreground/background restoration, and physical-device networking still need Android testing. No local Docker-based tests were claimed.
+Owner admin assignment is complete; the owner should confirm visibility of the Admin placeholder after signing out and back in. Password recovery UI, automatic email deep-link login, OAuth, app-store builds, and deployment are outside M1. Confirmation links use the development project's existing redirect configuration; README explains setting a clean local web redirect and returning to the app manually. Native keyboard, foreground/background restoration, and physical-device networking still need Android testing. No local Docker-based tests were claimed.
 
 ## Owner test checklist
 

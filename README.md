@@ -83,7 +83,7 @@ The project connection details and testing choices have been supplied. For anoth
 3. The email to use for the first app account and eventual GLOBAL_ADMIN. A Supabase dashboard account is separate from an app's Supabase Auth user. The admin role will be assigned by a trusted action after that app account exists; never through user-supplied signup metadata.
 4. The first test device: Android or iPhone. Web can supplement device testing.
 
-The owner selected Android with Expo Go for mobile testing, supplemented by web. Their app account must be created and verified before a trusted admin assignment. Email/password authentication uses email confirmation, and the display name is AI Chavrusah. AI and voice provider keys are not needed for Milestone 1.
+The owner selected Android with Expo Go for mobile testing, supplemented by web. Their verified app account has been assigned GLOBAL_ADMIN through the trusted developer helper. Email/password authentication uses email confirmation, and the display name is AI Chavrusah. AI and voice provider keys are not needed for Milestone 1.
 
 ## Database setup and admin assignment
 
@@ -135,7 +135,7 @@ npm.cmd run test:db
 
 Docker was not available on the development computer during setup, so the hosted checks provide the database-security validation. No Docker installation is required to use the hosted app.
 
-The [Milestone 1 report](Planning/Milestone-1-Report.md) records actual check results, file changes, and the owner test checklist. Physical Android/Expo Go acceptance and the owner's admin-account signup require manual testing.
+The [Milestone 1 report](Planning/Milestone-1-Report.md) records actual check results, file changes, and the owner test checklist. Owner sign-in and admin assignment are complete; physical Android/Expo Go acceptance and admin-placeholder visibility still require owner confirmation.
 
 The dependency audit remains unresolved: 29 entries propagate from four underlying upstream advisories. Compatible fixes were attempted without forcing incompatible framework versions. See the milestone report for details before considering deployment.
 
