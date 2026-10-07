@@ -1,6 +1,6 @@
 # AI Chavrusah Milestone 0 Architecture Plan
 
-Prepared October 6, 2026. Status: planning complete; implementation proposed and awaiting owner approval. No application features, dependencies, or database migrations have been created.
+Prepared October 6, 2026. Status: owner approved the Milestone 0 plan and README creation; Milestone 1 setup awaits development-project/account/device details. No application features, dependencies, or database migrations have been created.
 
 ## 1. Current repository assessment
 
@@ -20,7 +20,7 @@ Git has been initialized at the workspace root using its standard hidden .git di
 
 The initial-prompt file takes precedence over Material. Earlier documents propose user-level source policies, optional later versioning, and immediate intent classification/ownership revisits. The controlling plan instead requires global-admin source policy, versioning from Milestone 2, and defers the full human-first engine to Milestone 8. The resource directory is a research starting point, not an approved dependency or source list. Docs examples are comparison material, not verified source records or automatic model context.
 
-Because no starter exists, the Milestone 0 launch acceptance test cannot run. Creating a starter belongs to Milestone 1 under the explicit no-feature-build instruction. README architecture notes are deferred until approved, as requested by the controlling specification.
+Because no starter exists, the Milestone 0 launch acceptance test cannot run. Creating a starter belongs to Milestone 1 under the explicit no-feature-build instruction. README architecture notes have now been approved and added.
 
 ## 2. Proposed architecture
 
