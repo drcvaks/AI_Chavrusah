@@ -13,6 +13,7 @@
     "test:db": "supabase test db",
     "test:db:hosted": "node scripts/test-database.mjs",
     "test:auth:hosted": "node --env-file=.env scripts/test-hosted-auth.mjs",
+    "test:learning:hosted": "node --env-file=.env scripts/test-hosted-learning.mjs",
     "admin:promote": "node scripts/promote-admin.mjs",
     "export:web": "expo export --platform web",
     "export:android": "expo export --platform android"

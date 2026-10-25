@@ -39,6 +39,297 @@ export type Database = {
   }
   public: {
     Tables: {
+      learning_sessions: {
+        Row: {
+          context_type: string
+          daf: string | null
+          depth_mode: Database["public"]["Enums"]["learning_depth_mode"]
+          ended_at: string | null
+          id: string
+          mesechta: string | null
+          parsha: string | null
+          sefer: string | null
+          started_at: string
+          title: string
+          topic: string | null
+          user_id: string
+        }
+        Insert: {
+          context_type?: string
+          daf?: string | null
+          depth_mode?: Database["public"]["Enums"]["learning_depth_mode"]
+          ended_at?: string | null
+          id?: string
+          mesechta?: string | null
+          parsha?: string | null
+          sefer?: string | null
+          started_at?: string
+          title: string
+          topic?: string | null
+          user_id: string
+        }
+        Update: {
+          context_type?: string
+          daf?: string | null
+          depth_mode?: Database["public"]["Enums"]["learning_depth_mode"]
+          ended_at?: string | null
+          id?: string
+          mesechta?: string | null
+          parsha?: string | null
+          sefer?: string | null
+          started_at?: string
+          title?: string
+          topic?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          session_id: string
+          speaker: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          session_id: string
+          speaker: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          session_id?: string
+          speaker?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_anchor_sources: {
+        Row: {
+          note_id: string
+          rank: number
+          reference_label: string
+          verification_status: string
+          why_central: string
+        }
+        Insert: {
+          note_id: string
+          rank: number
+          reference_label: string
+          verification_status?: string
+          why_central?: string
+        }
+        Update: {
+          note_id?: string
+          rank?: number
+          reference_label?: string
+          verification_status?: string
+          why_central?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_anchor_sources_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_facets: {
+        Row: {
+          facet_type: string
+          facet_value: string
+          note_id: string
+        }
+        Insert: {
+          facet_type: string
+          facet_value: string
+          note_id: string
+        }
+        Update: {
+          facet_type?: string
+          facet_value?: string
+          note_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_facets_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_sessions: {
+        Row: {
+          note_id: string
+          session_id: string
+        }
+        Insert: {
+          note_id: string
+          session_id: string
+        }
+        Update: {
+          note_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_sessions_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_versions: {
+        Row: {
+          author_display_name: string
+          author_thesis_snapshot: string
+          body: string
+          change_reason: string
+          created_at: string
+          created_by: string
+          id: string
+          note_id: string
+          parent_version_id: string | null
+          summary: string
+          title_snapshot: string
+          version_number: number
+        }
+        Insert: {
+          author_display_name: string
+          author_thesis_snapshot: string
+          body: string
+          change_reason: string
+          created_at?: string
+          created_by: string
+          id?: string
+          note_id: string
+          parent_version_id?: string | null
+          summary?: string
+          title_snapshot: string
+          version_number: number
+        }
+        Update: {
+          author_display_name?: string
+          author_thesis_snapshot?: string
+          body?: string
+          change_reason?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          note_id?: string
+          parent_version_id?: string | null
+          summary?: string
+          title_snapshot?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_versions_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_versions_note_id_parent_version_id_fkey"
+            columns: ["note_id", "parent_version_id"]
+            isOneToOne: false
+            referencedRelation: "note_versions"
+            referencedColumns: ["note_id", "id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          author_display_name: string
+          author_thesis: string
+          created_at: string
+          current_version_id: string
+          id: string
+          owner_user_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_display_name: string
+          author_thesis: string
+          created_at?: string
+          current_version_id: string
+          id?: string
+          owner_user_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_display_name?: string
+          author_thesis?: string
+          created_at?: string
+          current_version_id?: string
+          id?: string
+          owner_user_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "current_version_same_note"
+            columns: ["id", "current_version_id"]
+            isOneToOne: false
+            referencedRelation: "note_versions"
+            referencedColumns: ["note_id", "id"]
+          },
+          {
+            foreignKeyName: "notes_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -66,12 +357,87 @@ export type Database = {
         }
         Relationships: []
       }
+      questions: {
+        Row: {
+          created_at: string
+          id: string
+          note_id: string | null
+          owner_user_id: string
+          question_text: string
+          session_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note_id?: string | null
+          owner_user_id: string
+          question_text: string
+          session_id?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_id?: string | null
+          owner_user_id?: string
+          question_text?: string
+          session_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       is_global_admin: { Args: never; Returns: boolean }
+      restore_learning_note: {
+        Args: {
+          p_expected_version_id: string
+          p_note_id: string
+          p_version_id: string
+        }
+        Returns: string
+      }
+      save_learning_note: {
+        Args: {
+          p_anchors: Json
+          p_author_thesis: string
+          p_body: string
+          p_change_reason: string
+          p_expected_version_id: string
+          p_facets: Json
+          p_note_id: string
+          p_session_ids: string[]
+          p_summary: string
+          p_title: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "USER" | "GLOBAL_ADMIN"

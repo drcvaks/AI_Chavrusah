@@ -1,6 +1,6 @@
 # AI Chavrusah Milestone 1 Report
 
-Status: implementation delivered and automated checks passed; owner sign-in confirmed and global admin assigned. Physical Android acceptance and the remaining owner checklist still need confirmation. Scope is app shell, authentication, private profiles, typed models, and admin placeholders only. Milestone 2 has not started.
+Status: accepted by the owner, who approved Milestone 2 on October 25, 2026. This historical report records the app shell, authentication, private profiles, typed models, and admin placeholders. See Milestone-2-Report.md for subsequent implementation and validation.
 
 ## Delivered behavior
 

@@ -37,7 +37,7 @@ describe('authentication identity boundaries', () => {
     await controller.start();
     const loading = controller.setSession(session('admin'));
     await controller.setSession(null);
-    expect(controller.getSnapshot()).toEqual({ session: null, profile: null, loading: false, error: null });
+    expect(controller.getSnapshot()).toEqual({ session: null, profile: null, loading: false, profileVerified: false, error: null });
     delayed.resolve(profile('admin', 'GLOBAL_ADMIN'));
     await loading;
     expect(controller.getSnapshot().profile).toBeNull();
@@ -82,6 +82,32 @@ describe('authentication identity boundaries', () => {
     delayed.resolve(profile('owner', 'GLOBAL_ADMIN'));
     await request;
     expect(controller.getSnapshot().profile).toBeNull();
+  });
+});
+
+describe('same-account draft protection', () => {
+  it('keeps the workspace mounted during revalidation without granting cached admin access', async () => {
+    const delayed = deferred<Profile>();
+    let pending = false;
+    const { controller } = setup(async (id) => pending ? delayed.promise : profile(id, 'GLOBAL_ADMIN'));
+    await controller.start(); await controller.setSession(session('owner')); pending = true;
+    const refresh = controller.refreshProfile();
+    const current = controller.getSnapshot();
+    expect(current.loading).toBe(false);
+    expect(current.profile?.id).toBe('owner');
+    expect(canAccessAdmin('owner', current.profile, current.profileVerified)).toBe(false);
+    delayed.resolve(profile('owner', 'GLOBAL_ADMIN')); await refresh;
+    expect(controller.getSnapshot().profileVerified).toBe(true);
+  });
+  it('retains a same-account editor on refresh failure while failing admin access closed', async () => {
+    let offline = false;
+    const { controller } = setup(async (id) => { if (offline) throw new Error('Offline'); return profile(id, 'GLOBAL_ADMIN'); });
+    await controller.start(); await controller.setSession(session('owner')); offline = true;
+    await controller.refreshProfile();
+    const current = controller.getSnapshot();
+    expect(current.profile?.id).toBe('owner');
+    expect(current.loading).toBe(false); expect(current.error).toBe('Offline');
+    expect(canAccessAdmin('owner', current.profile, current.profileVerified)).toBe(false);
   });
 });
 

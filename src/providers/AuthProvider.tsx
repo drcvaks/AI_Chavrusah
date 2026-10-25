@@ -3,9 +3,9 @@ import { AppState, Platform } from 'react-native';
 import { authDependencies } from '../services/auth';
 import { AuthController, type AuthState } from '../services/auth/controller';
 import { supabase } from '../lib/supabase';
-import type { Profile } from '../domain/models';
+import { canAccessAdmin, type Profile } from '../domain/models';
 
-const AuthContext = createContext<(AuthState & { refreshProfile: () => Promise<void>; updateCurrentProfile: (profile: Profile) => void }) | null>(null);
+const AuthContext = createContext<(AuthState & { isAdmin: boolean; refreshProfile: () => Promise<void>; updateCurrentProfile: (profile: Profile) => void }) | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [controller] = useState(() => new AuthController(authDependencies));
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return () => { listener.remove(); supabase?.auth.stopAutoRefresh(); controller.stop(); };
   }, [controller]);
 
-  return <AuthContext.Provider value={{ ...state, refreshProfile: controller.refreshProfile, updateCurrentProfile: controller.updateCurrentProfile }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ ...state, isAdmin: canAccessAdmin(state.session?.user.id, state.profile, state.profileVerified), refreshProfile: controller.refreshProfile, updateCurrentProfile: controller.updateCurrentProfile }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

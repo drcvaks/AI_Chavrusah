@@ -4,9 +4,9 @@ AI Chavrusah is a planned voice-first Torah-learning workspace for conversationa
 
 ## Project status
 
-The owner approved the [Milestone 0 architecture plan](Planning/Milestone-0-Plan.md). Milestone 1 adds an Expo app shell, email/password authentication, private profiles, saved display-name/depth preferences, and an admin-only placeholder. My Learning remains a placeholder. No AI, source retrieval, note features, or voice are implemented.
+The owner accepted Milestone 1 and approved Milestone 2. The app now supports manual learning sessions, durable notes with author-thesis capture, immutable version history and restore, faceted organization, and up to five explicitly unverified anchor references. Authentication, private profiles, preferences and the admin placeholder remain in place. No AI, source retrieval, or voice is implemented.
 
-The development Supabase project is linked. Client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. The profiles migration is applied. Detailed validation and remaining manual checks belong in [the Milestone 1 report](Planning/Milestone-1-Report.md).
+The development Supabase project is linked and the Milestone 2 migrations are applied. Client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. Current validation and the owner checklist are in [the Milestone 2 report](Planning/Milestone-2-Report.md); the [Milestone 1 report](Planning/Milestone-1-Report.md) records the original foundation.
 
 ## Run the app
 
@@ -21,7 +21,7 @@ npm.cmd start
 
 For Android, install/update Expo Go, connect the phone and computer to the same network, and scan the terminal QR code from Expo Go. The installed Expo Go must support SDK 57; Android can also use the matching build from [Expo Go downloads](https://expo.dev/go). Web testing uses `npm.cmd run web` or the `w` option in the running Expo terminal. Web and mobile share the hosted development database.
 
-The app starts on port 8083 because 8081 is occupied by another development server on this computer. Open `http://localhost:8083` for web testing. If Expo Go chooses a virtual network interface, use the Wi-Fi address with `REACT_NATIVE_PACKAGER_HOSTNAME` when starting Expo; the current test session uses 10.0.0.52.
+The app defaults to port 8083 to avoid another development server. Open `http://localhost:8083` for web testing. If Expo Go chooses a virtual network interface, use your current Wi-Fi address with `REACT_NATIVE_PACKAGER_HOSTNAME` when starting Expo. The Milestone 2 agent preview uses `http://localhost:8085` without taking over your existing server.
 
 Create an app account with your chosen password and confirm its email before signing in. Your Supabase dashboard login does not create an app account. After clicking the confirmation link, return to the app and sign in manually; automatic email deep-link login is not implemented. If the default confirmation redirect opens an unavailable localhost page, the email may still have been confirmed; return and try signing in. For a clean local web redirect, set Authentication > URL Configuration > Site URL to your running web URL, `http://localhost:8083`, in the development dashboard.
 
@@ -38,7 +38,19 @@ Create an app account with your chosen password and confirm its email before sig
 - `supabase/migrations/` and `src/types/database.ts`: versioned schema and generated types.
 - `tests/`, `supabase/tests/`, and `scripts/`: client/security tests and trusted developer administration helpers.
 
-## Planned architecture
+## Use Milestone 2
+
+Open My Learning to create a session or a standalone note. A session records its learning context, depth and optional daf/sefer/parsha/topic. Open a session to write a linked note or end the learning period. Notes may link several sessions.
+
+Write your author thesis/core idea explicitly. Add body text, an optional summary, comma-separated facets, and up to five discovery anchors. Anchor labels are UNVERIFIED; no source text is retrieved and nothing is presented as a verified citation. The body is not subject to the five-anchor limit.
+
+Every save creates a version with a server timestamp, author ID/display-name snapshot, change reason and parent. View version history to preview old text. Restoring copies the selected title, thesis, summary and body into a new version. Organization facets, anchors and session links remain current rather than rolling back with text.
+
+Save explicitly before leaving an editor; local drafts are not autosaved or crash-recoverable. Same-account refreshes keep the current screen mounted. Concurrent saves use an expected version: a stale editor gets a conflict and retains its draft for copying/merging. Changing accounts or signing out clears private state.
+
+Search notes by title/thesis or filter a chosen facet dimension. The starter library uses Supabase's response limit; pagination and full-text body search are deferred.
+
+## Architecture
 
 Use Expo, React Native, TypeScript, and Expo Router for the app, with Supabase Auth, Postgres, and Row Level Security (RLS) for private data. Keep domain types and services separate from screens. Run privileged source retrieval, source authorization, and AI calls on the server. Each later milestone adds only the interfaces and implementations it needs.
 
@@ -119,10 +131,13 @@ npm.cmd run export:web
 npm.cmd run export:android
 npm.cmd run test:db:hosted
 npm.cmd run test:auth:hosted
+npm.cmd run test:learning:hosted
 npx.cmd supabase db lint --linked --level warning
 ```
 
-Hosted database tests run 20 pgTAP assertions inside a rolled-back transaction, using real anon/authenticated roles. The harness raises a SQL error if an assertion fails. Hosted API tests obtain the admin API key only in process memory through the authorized CLI, create two clearly named temporary test accounts, test sign-in/out and Data API permissions, and remove those accounts in cleanup. Run hosted tests only against the agreed development project. Neither script writes secrets to disk or logs them.
+Hosted database tests run all SQL test files (currently 56 pgTAP assertions), using real anon/authenticated roles inside rolled-back transactions. The harness raises a SQL error if an assertion fails. Hosted API tests obtain the admin API key only in process memory through the authorized CLI and remove their temporary accounts in cleanup. The learning suite checks private sessions/notes, the anchor limit, immutable history, atomic save/restore, and two simultaneous editors. Run hosted tests only against the agreed development project. Neither suite writes secrets to disk or logs them.
+
+Expo generates typed routes in .expo. If typecheck reports stale route names after adding screens, restart Expo to regenerate its route declarations before rechecking.
 
 For local database tests, Docker or a compatible container runtime is required:
 
@@ -135,8 +150,8 @@ npm.cmd run test:db
 
 Docker was not available on the development computer during setup, so the hosted checks provide the database-security validation. No Docker installation is required to use the hosted app.
 
-The [Milestone 1 report](Planning/Milestone-1-Report.md) records actual check results, file changes, and the owner test checklist. Owner sign-in and admin assignment are complete; physical Android/Expo Go acceptance and admin-placeholder visibility still require owner confirmation.
+The [Milestone 2 report](Planning/Milestone-2-Report.md) records current check results, changed files and the owner checklist. Owner sign-in/admin setup is complete. Physical Android acceptance of the new learning screens remains an owner test.
 
-The dependency audit remains unresolved: 29 entries propagate from four underlying upstream advisories. Compatible fixes were attempted without forcing incompatible framework versions. See the milestone report for details before considering deployment.
+The Milestone 1 audit recorded 29 entries propagated from four underlying upstream advisories; compatible fixes did not clear them at that time. Dependencies were not upgraded or re-audited in Milestone 2. See that report and reassess compatible fixes before deployment.
 
 Complete one milestone at a time. After each milestone, report changed files, check results, limitations, and manual tests, then wait for the owner's approval before proceeding.

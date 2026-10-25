@@ -7,6 +7,6 @@ export type FacetType = 'DOMAIN' | 'CORPUS' | 'CONTEXT' | 'TOPIC';
 export type IdeaOrigin = 'USER' | 'AI' | 'SOURCE' | 'JOINTLY_DEVELOPED';
 export type SourcePolicyState = 'APPROVED' | 'ON_REQUEST' | 'EXCLUDED';
 
-export function canAccessAdmin(userId: string | undefined, profile: Profile | null) {
-  return !!userId && profile?.id === userId && profile.role === 'GLOBAL_ADMIN';
+export function canAccessAdmin(userId: string | undefined, profile: Profile | null, profileVerified = true) {
+  return profileVerified && !!userId && profile?.id === userId && profile.role === 'GLOBAL_ADMIN';
 }
