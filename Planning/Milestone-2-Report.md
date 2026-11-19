@@ -1,6 +1,6 @@
 # AI Chavrusah Milestone 2 Report
 
-October 25, 2026. Status: implementation delivered for owner acceptance. Milestone 3 has not started.
+October 25, 2026. Status: accepted by the owner, who authorized Milestone 3. The following records the Milestone 2 delivery; current source-policy behavior is documented in the Milestone 3 report.
 
 ## Behavior delivered
 

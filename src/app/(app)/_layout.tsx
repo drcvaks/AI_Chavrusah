@@ -10,6 +10,7 @@ export default function WorkspaceLayout() {
     <Stack.Screen name="settings" options={{ title: 'Settings' }} />
     <Stack.Screen name="sessions/new" options={{ title: 'New session' }} />
     <Stack.Screen name="sessions/[id]" options={{ title: 'Learning session' }} />
+    <Stack.Screen name="sessions/[id]/sources" options={{ title: 'Mock source checks' }} />
     <Stack.Screen name="notes/new" options={{ title: 'New note' }} />
     <Stack.Screen name="notes/[id]" options={{ title: 'Learning note' }} />
     <Stack.Screen name="notes/[id]/edit" options={{ title: 'Edit note' }} />

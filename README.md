@@ -4,9 +4,9 @@ AI Chavrusah is a planned voice-first Torah-learning workspace for conversationa
 
 ## Project status
 
-The owner accepted Milestone 1 and approved Milestone 2. The app now supports manual learning sessions, durable notes with author-thesis capture, immutable version history and restore, faceted organization, and up to five explicitly unverified anchor references. Authentication, private profiles, preferences and the admin placeholder remain in place. No AI, source retrieval, or voice is implemented.
+The owner accepted Milestones 1 and 2 and authorized Milestone 3. The app supports private learning sessions, versioned notes, facets and unverified anchors. Milestone 3 adds global source-policy administration and a server-enforced gateway using clearly labeled synthetic sources. No real Torah provider, AI or voice is implemented.
 
-The development Supabase project is linked and the Milestone 2 migrations are applied. Client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. Current validation and the owner checklist are in [the Milestone 2 report](Planning/Milestone-2-Report.md); the [Milestone 1 report](Planning/Milestone-1-Report.md) records the original foundation.
+The development Supabase project is linked, all Milestone 3 migrations are applied, and the source-gateway Edge Function is deployed. Client configuration is saved in an ignored local `.env`, with `.env.example` as the tracked template. Current validation and the owner checklist are in [the Milestone 3 report](Planning/Milestone-3-Report.md); earlier reports preserve the foundation and notes delivery.
 
 ## Run the app
 
@@ -21,7 +21,7 @@ npm.cmd start
 
 For Android, install/update Expo Go, connect the phone and computer to the same network, and scan the terminal QR code from Expo Go. The installed Expo Go must support SDK 57; Android can also use the matching build from [Expo Go downloads](https://expo.dev/go). Web testing uses `npm.cmd run web` or the `w` option in the running Expo terminal. Web and mobile share the hosted development database.
 
-The app defaults to port 8083 to avoid another development server. Open `http://localhost:8083` for web testing. If Expo Go chooses a virtual network interface, use your current Wi-Fi address with `REACT_NATIVE_PACKAGER_HOSTNAME` when starting Expo. The Milestone 2 agent preview uses `http://localhost:8085` without taking over your existing server.
+The app defaults to port 8083 to avoid another development server. Open `http://localhost:8083` for web testing. If Expo Go chooses a virtual network interface, use your current Wi-Fi address with `REACT_NATIVE_PACKAGER_HOSTNAME` when starting Expo. The Milestone 3 agent web preview uses `http://localhost:8086` without taking over your existing server.
 
 Create an app account with your chosen password and confirm its email before signing in. Your Supabase dashboard login does not create an app account. After clicking the confirmation link, return to the app and sign in manually; automatic email deep-link login is not implemented. If the default confirmation redirect opens an unavailable localhost page, the email may still have been confirmed; return and try signing in. For a clean local web redirect, set Authentication > URL Configuration > Site URL to your running web URL, `http://localhost:8083`, in the development dashboard.
 
@@ -49,6 +49,12 @@ Every save creates a version with a server timestamp, author ID/display-name sna
 Save explicitly before leaving an editor; local drafts are not autosaved or crash-recoverable. Same-account refreshes keep the current screen mounted. Concurrent saves use an expected version: a stale editor gets a conflict and retains its draft for copying/merging. Changing accounts or signing out clears private state.
 
 Search notes by title/thesis or filter a chosen facet dimension. The starter library uses Supabase's response limit; pagination and full-text body search are deferred.
+
+## Use Milestone 3
+
+In Admin workspace, create WORK rules for `mock:work-a` APPROVED, `mock:work-b` ON_REQUEST and `mock:work-c` EXCLUDED. These are synthetic fixtures, not real source approvals. Open a learning session and choose Mock source checks. A should return synthetic text; C should be blocked. B requires the learner's explicit 60-minute permission for that exact source/edition and session; revocation or expiry blocks subsequent access.
+
+Any matching exclusion wins; otherwise version outranks work, author and category, with deeper categories preferred. No matching rule means deny. Editing a rule appends an audited replacement; retiring preserves history and applies remaining rules or default denial. Ordinary users cannot change global policy. Reopening a saved hit requires the original session and current authorization, even when the original decision allowed it. Use Recheck source access after policy changes; already delivered bytes cannot be retracted automatically.
 
 ## Architecture
 
@@ -132,10 +138,11 @@ npm.cmd run export:android
 npm.cmd run test:db:hosted
 npm.cmd run test:auth:hosted
 npm.cmd run test:learning:hosted
+npm.cmd run test:sources:hosted
 npx.cmd supabase db lint --linked --level warning
 ```
 
-Hosted database tests run all SQL test files (currently 56 pgTAP assertions), using real anon/authenticated roles inside rolled-back transactions. The harness raises a SQL error if an assertion fails. Hosted API tests obtain the admin API key only in process memory through the authorized CLI and remove their temporary accounts in cleanup. The learning suite checks private sessions/notes, the anchor limit, immutable history, atomic save/restore, and two simultaneous editors. Run hosted tests only against the agreed development project. Neither suite writes secrets to disk or logs them.
+Hosted database tests run all SQL test files (currently 93 pgTAP assertions), using real anon/authenticated roles inside rolled-back transactions. The harness raises a SQL error if an assertion fails. Hosted API tests obtain the admin API key only in process memory through the authorized CLI and remove their temporary accounts in cleanup. The learning suite checks private sessions/notes, immutable history, atomic save/restore and concurrent editors. The source suite checks the deployed gateway, policy enforcement, exact-session permission, expiry/revocation and protected historical text. Run hosted tests only against the agreed development project; secrets are not logged or written to disk.
 
 Expo generates typed routes in .expo. If typecheck reports stale route names after adding screens, restart Expo to regenerate its route declarations before rechecking.
 
@@ -150,8 +157,8 @@ npm.cmd run test:db
 
 Docker was not available on the development computer during setup, so the hosted checks provide the database-security validation. No Docker installation is required to use the hosted app.
 
-The [Milestone 2 report](Planning/Milestone-2-Report.md) records current check results, changed files and the owner checklist. Owner sign-in/admin setup is complete. Physical Android acceptance of the new learning screens remains an owner test.
+The [Milestone 3 report](Planning/Milestone-3-Report.md) records current check results, changed areas and the owner checklist. Owner sign-in/admin setup is complete. Physical Android acceptance of the source screens remains an owner test.
 
-The Milestone 1 audit recorded 29 entries propagated from four underlying upstream advisories; compatible fixes did not clear them at that time. Dependencies were not upgraded or re-audited in Milestone 2. See that report and reassess compatible fixes before deployment.
+The Milestone 1 audit recorded 29 entries propagated from four underlying upstream advisories; compatible fixes did not clear them at that time. Dependencies were not upgraded or re-audited in Milestones 2 or 3. See that report and reassess compatible fixes before deployment.
 
 Complete one milestone at a time. After each milestone, report changed files, check results, limitations, and manual tests, then wait for the owner's approval before proceeding.

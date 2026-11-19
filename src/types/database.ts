@@ -132,6 +132,7 @@ export type Database = {
           note_id: string
           rank: number
           reference_label: string
+          source_hit_id: string | null
           verification_status: string
           why_central: string
         }
@@ -139,6 +140,7 @@ export type Database = {
           note_id: string
           rank: number
           reference_label: string
+          source_hit_id?: string | null
           verification_status?: string
           why_central?: string
         }
@@ -146,6 +148,7 @@ export type Database = {
           note_id?: string
           rank?: number
           reference_label?: string
+          source_hit_id?: string | null
           verification_status?: string
           why_central?: string
         }
@@ -155,6 +158,13 @@ export type Database = {
             columns: ["note_id"]
             isOneToOne: false
             referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_anchor_sources_source_hit_id_fkey"
+            columns: ["source_hit_id"]
+            isOneToOne: false
+            referencedRelation: "source_hits"
             referencedColumns: ["id"]
           },
         ]
@@ -211,6 +221,42 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_sources: {
+        Row: {
+          claim_locator: string | null
+          note_version_id: string
+          source_hit_id: string
+          usage_type: string
+        }
+        Insert: {
+          claim_locator?: string | null
+          note_version_id: string
+          source_hit_id: string
+          usage_type?: string
+        }
+        Update: {
+          claim_locator?: string | null
+          note_version_id?: string
+          source_hit_id?: string
+          usage_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_sources_note_version_id_fkey"
+            columns: ["note_version_id"]
+            isOneToOne: false
+            referencedRelation: "note_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_sources_source_hit_id_fkey"
+            columns: ["source_hit_id"]
+            isOneToOne: false
+            referencedRelation: "source_hits"
             referencedColumns: ["id"]
           },
         ]
@@ -409,12 +455,271 @@ export type Database = {
           },
         ]
       }
+      source_authorizations: {
+        Row: {
+          confirmed_at: string
+          expires_at: string
+          id: string
+          policy_revision: number
+          policy_rule_id: string
+          revoked_at: string | null
+          session_id: string
+          source_key: string
+          user_id: string
+          version_key: string
+        }
+        Insert: {
+          confirmed_at?: string
+          expires_at: string
+          id?: string
+          policy_revision: number
+          policy_rule_id: string
+          revoked_at?: string | null
+          session_id: string
+          source_key: string
+          user_id: string
+          version_key: string
+        }
+        Update: {
+          confirmed_at?: string
+          expires_at?: string
+          id?: string
+          policy_revision?: number
+          policy_rule_id?: string
+          revoked_at?: string | null
+          session_id?: string
+          source_key?: string
+          user_id?: string
+          version_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_authorizations_policy_rule_id_fkey"
+            columns: ["policy_rule_id"]
+            isOneToOne: false
+            referencedRelation: "source_policy_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_authorizations_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_authorizations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      source_hits: {
+        Row: {
+          author_keys: string[]
+          authorization_id: string | null
+          canonical_ref: string
+          categories: string[]
+          he_title: string | null
+          id: string
+          is_mock: boolean
+          language: string
+          policy_decision: string
+          policy_rule_id: string
+          policy_snapshot: Json
+          provenance_metadata: Json
+          provider: string
+          retrieved_at: string
+          retrieved_text: string
+          session_id: string
+          source_key: string
+          title: string
+          user_id: string
+          version_key: string
+          version_title: string
+          work_key: string
+        }
+        Insert: {
+          author_keys: string[]
+          authorization_id?: string | null
+          canonical_ref: string
+          categories: string[]
+          he_title?: string | null
+          id?: string
+          is_mock: boolean
+          language: string
+          policy_decision: string
+          policy_rule_id: string
+          policy_snapshot: Json
+          provenance_metadata: Json
+          provider: string
+          retrieved_at?: string
+          retrieved_text: string
+          session_id: string
+          source_key: string
+          title: string
+          user_id: string
+          version_key: string
+          version_title: string
+          work_key: string
+        }
+        Update: {
+          author_keys?: string[]
+          authorization_id?: string | null
+          canonical_ref?: string
+          categories?: string[]
+          he_title?: string | null
+          id?: string
+          is_mock?: boolean
+          language?: string
+          policy_decision?: string
+          policy_rule_id?: string
+          policy_snapshot?: Json
+          provenance_metadata?: Json
+          provider?: string
+          retrieved_at?: string
+          retrieved_text?: string
+          session_id?: string
+          source_key?: string
+          title?: string
+          user_id?: string
+          version_key?: string
+          version_title?: string
+          work_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_hits_authorization_id_fkey"
+            columns: ["authorization_id"]
+            isOneToOne: false
+            referencedRelation: "source_authorizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_hits_policy_rule_id_fkey"
+            columns: ["policy_rule_id"]
+            isOneToOne: false
+            referencedRelation: "source_policy_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_hits_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "learning_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_hits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      source_policy_rules: {
+        Row: {
+          active: boolean
+          admin_display_name: string
+          created_at: string
+          created_by_admin: string | null
+          id: string
+          reason: string
+          retired_at: string | null
+          retired_by_admin: string | null
+          retired_by_display_name: string | null
+          retirement_reason: string | null
+          retirement_revision: number | null
+          revision: number
+          scope_key: string
+          scope_type: string
+          state: string
+          supersedes_rule_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          admin_display_name: string
+          created_at?: string
+          created_by_admin?: string | null
+          id?: string
+          reason?: string
+          retired_at?: string | null
+          retired_by_admin?: string | null
+          retired_by_display_name?: string | null
+          retirement_reason?: string | null
+          retirement_revision?: number | null
+          revision: number
+          scope_key: string
+          scope_type: string
+          state: string
+          supersedes_rule_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          admin_display_name?: string
+          created_at?: string
+          created_by_admin?: string | null
+          id?: string
+          reason?: string
+          retired_at?: string | null
+          retired_by_admin?: string | null
+          retired_by_display_name?: string | null
+          retirement_reason?: string | null
+          retirement_revision?: number | null
+          revision?: number
+          scope_key?: string
+          scope_type?: string
+          state?: string
+          supersedes_rule_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "source_policy_rules_created_by_admin_fkey"
+            columns: ["created_by_admin"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_policy_rules_retired_by_admin_fkey"
+            columns: ["retired_by_admin"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "source_policy_rules_supersedes_rule_id_fkey"
+            columns: ["supersedes_rule_id"]
+            isOneToOne: false
+            referencedRelation: "source_policy_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      authorize_source_once: {
+        Args: { p_session_id: string; p_source_key: string }
+        Returns: string
+      }
       is_global_admin: { Args: never; Returns: boolean }
+      manage_source_policy: {
+        Args: {
+          p_expected_revision: number
+          p_id: string
+          p_reason: string
+          p_scope_key: string
+          p_scope_type: string
+          p_state: string
+        }
+        Returns: string
+      }
       restore_learning_note: {
         Args: {
           p_expected_version_id: string
@@ -422,6 +727,10 @@ export type Database = {
           p_version_id: string
         }
         Returns: string
+      }
+      revoke_source_authorization: {
+        Args: { p_authorization_id: string }
+        Returns: undefined
       }
       save_learning_note: {
         Args: {
@@ -438,6 +747,40 @@ export type Database = {
         }
         Returns: string
       }
+      source_gateway_catalog: {
+        Args: { p_actor: string; p_session_id: string }
+        Returns: Json
+      }
+      source_gateway_decide: {
+        Args: { p_actor: string; p_session_id: string; p_source_key: string }
+        Returns: Json
+      }
+      source_gateway_descriptor: {
+        Args: { p_actor: string; p_source_key: string }
+        Returns: Json
+      }
+      source_gateway_history: {
+        Args: { p_actor: string; p_session_id: string }
+        Returns: Json
+      }
+      source_gateway_mock_text: {
+        Args: { p_actor: string; p_source_key: string }
+        Returns: string
+      }
+      source_gateway_open: {
+        Args: { p_actor: string; p_hit_id: string; p_session_id: string }
+        Returns: Json
+      }
+      source_gateway_publish: {
+        Args: {
+          p_actor: string
+          p_session_id: string
+          p_source_key: string
+          p_text: string
+        }
+        Returns: Json
+      }
+      source_policy_configuration: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "USER" | "GLOBAL_ADMIN"

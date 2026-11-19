@@ -36,6 +36,7 @@ export default function SessionDetail() {
       <Paragraph>{[session.mesechta, session.daf, session.sefer, session.parsha, session.topic].filter(Boolean).join(' · ') || 'Open learning'}</Paragraph>
       <Paragraph>Started {formatTime(session.started_at)}{session.ended_at ? `\nEnded ${formatTime(session.ended_at)}` : ''}</Paragraph>
       <Button title="Write a note from this session" onPress={() => router.push({ pathname: '/notes/new', params: { sessionId: id } })} />
+      <Button title="Mock source checks" secondary onPress={() => router.push({ pathname: '/sessions/[id]/sources', params: { id } })} />
       {!session.ended_at && <Button title={busy ? 'Ending…' : 'End session'} secondary disabled={busy} onPress={() => { void end(); }} />}
     </Card><SectionTitle>Linked notes</SectionTitle>
     {notes.length ? notes.map((note) => <Card key={note.id}><SectionTitle>{note.title}</SectionTitle><Button title="Open note" secondary onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })} /></Card>) : <Paragraph>No notes linked yet.</Paragraph>}
